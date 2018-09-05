@@ -1,0 +1,95 @@
+<!DOCTYPE html style="width:100%;height:100%">
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Zhang Chao</title>
+  <script src="http://res.zhangchao.online/js/jquery.min.js"></script>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+
+    #container {
+      height: calc(100vh + 100px);
+      background: bisque;
+    }
+
+    #bg-image.lazy {
+      background-image: none;
+      background-color: #F1F1FA;
+    }
+
+    #bg-image {
+      background-image: url("https://ik.imagekit.io/demo/img/image10.jpeg?tr=w-600,h-400");
+      max-width: 600px;
+      height: 400px;
+    }
+  </style>
+</head>
+
+<body style="width:100%;height:100%">
+  <div id="container">
+    <h3>
+      图片还未加载！！！！！往下拉
+    </h3>
+  </div>
+  <div id="bg-image" class="lazy"></div>
+</body>
+<script>
+  $(document).ready(function () {
+    var lazyloadImages;
+
+    if ("IntersectionObserver" in window) {
+      lazyloadImages = document.querySelectorAll(".lazy");
+      var imageObserver = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var image = entry.target;
+            image.src = image.dataset.src;
+            image.classList.remove("lazy");
+            imageObserver.unobserve(image);
+          }
+        });
+      });
+
+      lazyloadImages.forEach(function (image) {
+        imageObserver.observe(image);
+      });
+    } else {
+      var lazyloadThrottleTimeout;
+      lazyloadImages = $(".lazy");
+
+      function lazyload() {
+        if (lazyloadThrottleTimeout) {
+          clearTimeout(lazyloadThrottleTimeout);
+        }
+
+        lazyloadThrottleTimeout = setTimeout(function () {
+          var scrollTop = $(window).scrollTop();
+          lazyloadImages.each(function () {
+            var el = $(this);
+            if (el.offset().top < (window.innerHeight + scrollTop)) {
+              var url = el.attr("data-src");
+              el.attr("src", url);
+              el.removeClass("lazy");
+              lazyloadImages = $(".lazy");
+            }
+          });
+          if (lazyloadImages.length == 0) {
+            $(document).off("scroll");
+            $(window).off("resize");
+          }
+        }, 20);
+      }
+
+      $(document).on("scroll", lazyload);
+      $(window).on("resize", lazyload);
+      $(window).on("orientationChange", lazyload);
+    }
+  })
+</script>
+
+</html>

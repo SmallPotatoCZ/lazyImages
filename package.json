@@ -1,0 +1,8 @@
+{
+  "name": "lazyImages",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:SmallPotatoCZ/lazyImages.git",
+  "author": "zhangChao <1148563917@qq.com>",
+  "license": "MIT"
+}
